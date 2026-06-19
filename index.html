@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Messier Object Viewer</title>
+    <link rel="icon" href="favicon.png" type="image/png">
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
         .container { display: flex; gap: 20px; }
@@ -89,13 +90,13 @@
         }
 
         function selectAll() {
-            Object.keys(constellationVars).forEach(const => constellationVars[const] = true);
+            Object.keys(constellationVars).forEach(c => {constellationVars[c] = true;});
             document.querySelectorAll('#constellationList input[type="checkbox"]').forEach(cb => cb.checked = true);
             filterObjects();
         }
 
         function deselectAll() {
-            Object.keys(constellationVars).forEach(const => constellationVars[const] = false);
+            Object.keys(constellationVars).forEach(c => {constellationVars[c] = false;});
             document.querySelectorAll('#constellationList input[type="checkbox"]').forEach(cb => cb.checked = false);
             filterObjects();
         }
@@ -106,7 +107,7 @@
             });
             const selectedConstellations = Object.entries(constellationVars)
                 .filter(([_, checked]) => checked)
-                .map(([const, _]) => const);
+                .map(([c, _]) => c);
             let filtered = Object.entries(messierData)
                 .filter(([_, obj]) => selectedConstellations.length === 0 || selectedConstellations.includes(obj.constellation));
             const sortBy = document.getElementById('sortBy').value;
