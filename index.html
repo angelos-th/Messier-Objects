@@ -16,7 +16,7 @@
     </style>
 </head>
 <body>
-    <h1>Messier Object Viewer <span class="version">v0.1.5</span></h1>
+    <h1>Messier Object Viewer <span class="version">v0.1.5.2</span></h1>
     <div class="container">
         <div class="left-panel">
             <h2>Select Constellations</h2>
@@ -120,7 +120,7 @@
                     case 'number': comparison = parseInt(a[0].substring(1)) - parseInt(b[0].substring(1)); break;
                     case 'magnitude': comparison = (aObj.magnitude || 99) - (bObj.magnitude || 99); break;
                     case 'difficulty':
-                        const diffOrder = { 'Very Easy': 0, 'Easy': 1, 'Moderate': 2, 'Hard': 3, 'Very Hard': 4};
+                        const diffOrder = { 'Very Easy': 1, 'Easy': 2, 'Moderate': 3, 'Hard': 4, 'Very Hard': 5};
                         comparison = (diffOrder[aObj.viewingDifficulty] || 5) - (diffOrder[bObj.viewingDifficulty] || 5);
                         break;
                 }
