@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Messier Object Viewer</title>
+    <link rel="icon" href="favicon.png" type="image/png">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { display: flex; gap: 20px; }
+        .left-panel { width: 250px; }
+        .right-panel { flex: 1; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; cursor: pointer; }
+        .constellation-list { max-height: 500px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <h1>Messier Object Viewer</h1>
+    <div class="container">
+        <div class="left-panel">
+            <h2>Select Constellations</h2>
+            <button onclick="selectAll()">Select All</button>
+            <button onclick="deselectAll()">Deselect All</button>
+            <div id="constellationList" class="constellation-list"></div>
+        </div>
+        <div class="right-panel">
+            <div>
+                Sort by:
+                <select id="sortBy" onchange="filterObjects()">
+                    <option value="number">Messier Number</option>
+                    <option value="magnitude">Magnitude</option>
+                    <option value="difficulty">Difficulty</option>
+                </select>
+                Order:
+                <select id="sortOrder" onchange="filterObjects()">
+                    <option value="asc">Ascending</option>
+                    <option value="desc">Descending</option>
+                </select>
+            </div>
+            <table id="resultsTable">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable(0)">Messier #</th>
+                        <th onclick="sortTable(1)">Name</th>
+                        <th onclick="sortTable(2)">Type</th>
+                        <th onclick="sortTable(3)">Magnitude</th>
+                        <th onclick="sortTable(4)">Difficulty</th>
+                        <th>Image</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsBody"></tbody>
+            </table>
+            <p id="status">Select constellations to see objects</p>
+        </div>
+    </div>
+
+    <script>
+        let messierData = {};
+        let constellationVars = {};
+
+        fetch('messier.json')
+            .then(response => response.json())
+            .then(data => {
+                messierData = data.data;
+                populateConstellations();
+                filterObjects();
+            });
+
+        function populateConstellations() {
+            const constellationList = document.getElementById('constellationList');
+            const constellations = [...new Set(Object.values(messierData).map(obj => obj.constellation))].sort();
+            constellations.forEach(constellation => {
+                constellationVars[constellation] = false;
+                const div = document.createElement('div');
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `const-${constellation}`;
+                checkbox.onchange = filterObjects;
+                const label = document.createElement('label');
+                label.htmlFor = `const-${constellation}`;
+                label.textContent = constellation;
+                div.appendChild(checkbox);
+                div.appendChild(label);
+                constellationList.appendChild(div);
+            });
+        }
+
+        function selectAll() {
+            Object.keys(constellationVars).forEach(const => constellationVars[const] = true);
+            document.querySelectorAll('#constellationList input[type="checkbox"]').forEach(cb => cb.checked = true);
+            filterObjects();
+        }
+
+        function deselectAll() {
+            Object.keys(constellationVars).forEach(const => constellationVars[const] = false);
+            document.querySelectorAll('#constellationList input[type="checkbox"]').forEach(cb => cb.checked = false);
+            filterObjects();
+        }
+
+        function filterObjects() {
+            document.querySelectorAll('#constellationList input[type="checkbox"]').forEach(cb => {
+                constellationVars[cb.nextElementSibling.textContent] = cb.checked;
+            });
+            const selectedConstellations = Object.entries(constellationVars)
+                .filter(([_, checked]) => checked)
+                .map(([const, _]) => const);
+            let filtered = Object.entries(messierData)
+                .filter(([_, obj]) => selectedConstellations.length === 0 || selectedConstellations.includes(obj.constellation));
+            const sortBy = document.getElementById('sortBy').value;
+            const sortOrder = document.getElementById('sortOrder').value;
+            filtered.sort((a, b) => {
+                const aObj = a[1], bObj = b[1];
+                let comparison = 0;
+                switch(sortBy) {
+                    case 'number': comparison = parseInt(a[0].substring(1)) - parseInt(b[0].substring(1)); break;
+                    case 'magnitude': comparison = (aObj.magnitude || 99) - (bObj.magnitude || 99); break;
+                    case 'difficulty':
+                        const diffOrder = { 'Easy': 0, 'Moderate': 1, 'Difficult': 2, 'Very Difficult': 3 };
+                        comparison = (diffOrder[aObj.viewingDifficulty] || 4) - (diffOrder[bObj.viewingDifficulty] || 4);
+                        break;
+                }
+                return sortOrder === 'asc' ? comparison : -comparison;
+            });
+            const tbody = document.getElementById('resultsBody');
+            tbody.innerHTML = '';
+            filtered.forEach(([key, obj]) => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${key}</td>
+                    <td>${obj.name}</td>
+                    <td>${obj.type}</td>
+                    <td>${obj.magnitude || ''}</td>
+                    <td>${obj.viewingDifficulty || ''}</td>
+                    <td>${obj.image ? `<a href="${obj.image}" target="_blank">View Image</a>` : ''}</td>
+                `;
+            });
+            document.getElementById('status').textContent = `Showing ${filtered.length} objects`;
+        }
+
+        function sortTable(columnIndex) {
+            const sortByOptions = ['number', 'magnitude', 'difficulty'];
+            const sortBy = document.getElementById('sortBy');
+            sortBy.value = sortByOptions[columnIndex] || 'number';
+            const order = document.getElementById('sortOrder');
+            order.value = order.value === 'asc' ? 'desc' : 'asc';
+            filterObjects();
+        }
+    </script>
+</body>
+</html>

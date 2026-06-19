@@ -240,7 +240,7 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = MessierViewer(root)
     root.geometry("1100x600")
-    img = Image.open('icon.png')
+    img = Image.open('favicon.png')
     img = img.resize((16, 16), Image.LANCZOS)
     root.iconphoto(False, ImageTk.PhotoImage(img))
     root.mainloop()
