@@ -53,17 +53,21 @@
         </div>
     </div>
 
-    <script>
-        let messierData = {};
-        let constellationVars = {};
+<script>
+    let messierData = {};
+    let constellationVars = {};
 
-        fetch('https://angelos-th.github.io/Messier-Objects/messier.json')
-            .then(response => response.json())
-            .then(data => {
-                messierData = data.data;
-                populateConstellations();
-                filterObjects();
-            });
+    fetch('https://angelos-th.github.io/Messier-Objects/messier.json')
+        .then(response => {
+            if (!response.ok) throw new Error('File not found');
+            return response.json();
+        })
+        .then(data => {
+            messierData = data.data;
+            populateConstellations();
+            filterObjects();
+        })
+        .catch(error => console.error('Error loading JSON:', error));
 
         function populateConstellations() {
             const constellationList = document.getElementById('constellationList');
