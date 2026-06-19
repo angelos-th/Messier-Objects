@@ -2,7 +2,6 @@
 <html>
 <head>
     <title>Messier Object Viewer</title>
-    <link rel="icon" href="favicon.png" type="image/png">
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
         .container { display: flex; gap: 20px; }
@@ -58,7 +57,7 @@
         let messierData = {};
         let constellationVars = {};
 
-        fetch('messier.json')
+        fetch('https://angelos-th.github.io/Messier-Objects/messier.json')
             .then(response => response.json())
             .then(data => {
                 messierData = data.data;
