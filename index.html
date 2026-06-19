@@ -119,7 +119,7 @@
                     case 'number': comparison = parseInt(a[0].substring(1)) - parseInt(b[0].substring(1)); break;
                     case 'magnitude': comparison = (aObj.magnitude || 99) - (bObj.magnitude || 99); break;
                     case 'difficulty':
-                        const diffOrder = { 'Very Easy': 0, 'Easy': 1, 'Moderate': 2, 'Hard': 3, 'Very Hard': 4, 'Difficult': 3, 'Very Difficult': 4 };
+                        const diffOrder = { 'Very Easy': 0, 'Easy': 1, 'Moderate': 2, 'Hard': 3, 'Very Hard': 4};
                         comparison = (diffOrder[aObj.viewingDifficulty] || 5) - (diffOrder[bObj.viewingDifficulty] || 5);
                         break;
                 }
