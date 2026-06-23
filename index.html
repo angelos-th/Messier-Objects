@@ -13,10 +13,26 @@
         th { background-color: #f2f2f2; cursor: pointer; }
         .constellation-list { max-height: 500px; overflow-y: auto; }
         .version { font-size: 0.7em; color: #666; }
+        .apod-banner {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            margin-bottom: 10px;
+            border-radius: 5px;
+                    }
+       .apod-credit {
+        font-size: 0.8em;
+        color: #666;
+        text-align: right;
+        margin-top: -15px;
+        margin-bottom: 10px;
+                    }
     </style>
 </head>
 <body>
-    <h1>Messier Object Viewer <span class="version">v0.1.5.2</span></h1>
+    <img src="https://apod.nasa.gov/apod/image/2605/messier_portrait_300px_160h.jpg" class="apod-banner" alt="Astronomy Picture of the Day">
+    <p class="apod-credit">Image: <a href="https://apod.nasa.gov/apod/ap260514.html" target="_blank">NASA APOD</a></p>
+    <h1>Messier Object Viewer <span class="version">v0.1.6.3</span></h1>
     <div class="container">
         <div class="left-panel">
             <h2>Select Constellations</h2>
@@ -29,6 +45,8 @@
                 Sort by:
                 <select id="sortBy" onchange="filterObjects()">
                     <option value="number">Messier Number</option>
+                    <option value="name">Name</option>
+                    <option value="type">Type</option>
                     <option value="magnitude">Magnitude</option>
                     <option value="difficulty">Difficulty</option>
                 </select>
@@ -116,14 +134,16 @@
             filtered.sort((a, b) => {
                 const aObj = a[1], bObj = b[1];
                 let comparison = 0;
-                switch(sortBy) {
-                    case 'number': comparison = parseInt(a[0].substring(1)) - parseInt(b[0].substring(1)); break;
-                    case 'magnitude': comparison = (aObj.magnitude || 99) - (bObj.magnitude || 99); break;
-                    case 'difficulty':
-                        const diffOrder = { 'Very Easy': 1, 'Easy': 2, 'Moderate': 3, 'Hard': 4, 'Very Hard': 5};
-                        comparison = (diffOrder[aObj.viewingDifficulty] || 5) - (diffOrder[bObj.viewingDifficulty] || 5);
-                        break;
-                }
+            switch(sortBy) {
+                case 'number': comparison = parseInt(a[0].substring(1)) - parseInt(b[0].substring(1)); break;
+                case 'name': comparison = aObj.name.localeCompare(bObj.name); break;
+                case 'type': comparison = aObj.type.localeCompare(bObj.type); break;
+                case 'magnitude': comparison = (aObj.magnitude || 99) - (bObj.magnitude || 99); break;
+                case 'difficulty':
+                    const diffOrder = { 'Very Easy': 1, 'Easy': 2, 'Moderate': 3, 'Hard': 4, 'Very Hard': 5};
+                    comparison = (diffOrder[aObj.viewingDifficulty] || 5) - (diffOrder[bObj.viewingDifficulty] || 5);
+                    break;
+            }
                 return sortOrder === 'asc' ? comparison : -comparison;
             });
             const tbody = document.getElementById('resultsBody');
@@ -143,7 +163,7 @@
         }
 
         function sortTable(columnIndex) {
-            const sortByOptions = ['number', 'magnitude', 'difficulty'];
+            const sortByOptions = ['number', 'name', 'type', 'magnitude', 'difficulty'];
             const sortBy = document.getElementById('sortBy');
             sortBy.value = sortByOptions[columnIndex] || 'number';
             const order = document.getElementById('sortOrder');
