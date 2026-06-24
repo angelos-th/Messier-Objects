@@ -1,2 +1,14 @@
-Messier Object Viewer
-A collection of tools to explore the Messier catalog. Includes a web app (HTML/CSS/JS) and a Python desktop app (Tkinter). Filter by constellation, sort by magnitude, difficulty, or Messier number, and view images. The web version is hosted on GitHub Pages.
+# Messier Object Viewer
+
+A collection of tools to explore the Messier catalog. Includes a **web app** (HTML/CSS/JS) and a **Python desktop app** (Tkinter).
+
+## Features
+- Filter by constellation
+- Sort by magnitude, difficulty, or Messier number
+- View object images
+
+## Access
+- **Web app:** https://angelos-th.github.io/Messier-Objects/
+
+## License
+MIT
