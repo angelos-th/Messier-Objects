@@ -4,35 +4,110 @@
     <title>Messier Object Viewer</title>
     <link rel="icon" href="favicon.png" type="image/png">
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
+        :root {
+            --bg: #ffffff;
+            --text: #000000;
+            --panel: #f5f5f5;
+            --border: #ddd;
+            --header: #f2f2f2;
+            --button: #e0e0e0;
+            --button-text: #000000;
+        }
+    
+        [data-theme="dark"] {
+            --bg: #121212;
+            --text: #e0e0e0;
+            --panel: #1e1e1e;
+            --border: #333;
+            --header: #2d2d2d;
+            --button: #2d2d2d;
+            --button-text: #e0e0e0;
+        }
+    
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: var(--bg);
+            color: var(--text);
+        }
+    
         .container { display: flex; gap: 20px; }
+        .left-panel, .right-panel {
+            background-color: var(--panel);
+            padding: 15px;
+            border-radius: 8px;
+        }
         .left-panel { width: 250px; }
         .right-panel { flex: 1; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; cursor: pointer; }
-        .constellation-list { max-height: 500px; overflow-y: auto; }
-        .version { font-size: 0.7em; color: #666; }
+    
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--panel);
+        }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: var(--header);
+            cursor: pointer;
+        }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        [data-theme="dark"] tr:nth-child(even) { background-color: #252525; }
+    
+        .constellation-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .version {
+            font-size: 0.7em;
+            color: #666;
+        }
+        [data-theme="dark"] .version { color: #888; }
+    
+        button {
+            background-color: var(--button);
+            color: var(--button-text);
+            border: 1px solid var(--border);
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+        [data-theme="light"] button:hover { background-color: #d0d0d0; }
+        [data-theme="dark"] button:hover { background-color: #3a3a3a; }
+    
         .apod-banner {
             width: 100%;
             max-height: 200px;
             object-fit: cover;
             margin-bottom: 10px;
             border-radius: 5px;
-                    }
-       .apod-credit {
-        font-size: 0.8em;
-        color: #666;
-        text-align: right;
-        margin-top: -15px;
-        margin-bottom: 10px;
-                    }
+        }
+        .apod-credit {
+            font-size: 0.8em;
+            color: #666;
+            text-align: right;
+            margin-top: -15px;
+            margin-bottom: 10px;
+        }
+        [data-theme="dark"] .apod-credit { color: #888; }
+        .apod-credit a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        [data-theme="dark"] .apod-credit a { color: #4dabf7; }
+        .apod-credit a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
     <img src="https://apod.nasa.gov/apod/image/2605/messier_portrait_300px_160h.jpg" class="apod-banner" alt="Astronomy Picture of the Day">
     <p class="apod-credit">Image: <a href="https://apod.nasa.gov/apod/ap260514.html" target="_blank">NASA APOD</a></p>
-    <h1>Messier Object Viewer <span class="version">v0.1.6.3</span></h1>
+    <h1>Messier Object Viewer <span class="version">v0.1.7.1</span></h1>
+    <button onclick="toggleTheme()" id="themeToggle">🌙</button>
     <div class="container">
         <div class="left-panel">
             <h2>Select Constellations</h2>
@@ -171,5 +246,24 @@
             filterObjects();
         }
     </script>
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            document.getElementById('themeToggle').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            localStorage.setItem('theme', newTheme);
+        }
+    
+        // Load saved theme on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            document.getElementById('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+        });
+    </script>
+
+    
 </body>
 </html>
