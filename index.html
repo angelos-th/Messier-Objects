@@ -106,7 +106,7 @@
 <body>
     <img src="https://apod.nasa.gov/apod/image/2605/messier_portrait_300px_160h.jpg" class="apod-banner" alt="Astronomy Picture of the Day">
     <p class="apod-credit">Image: <a href="https://apod.nasa.gov/apod/ap260514.html" target="_blank">NASA APOD</a></p>
-    <h1>Messier Object Viewer <span class="version">v0.1.7.1</span></h1>
+    <h1>Messier Object Viewer <span class="version">v0.1.7.2</span></h1>
     <button onclick="toggleTheme()" id="themeToggle">🌙</button>
     <div class="container">
         <div class="left-panel">
@@ -258,7 +258,7 @@
     
         // Load saved theme on page load
         document.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('theme') || 'light';
+            const savedTheme = localStorage.getItem('theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
             document.getElementById('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
         });
