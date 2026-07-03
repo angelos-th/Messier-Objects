@@ -101,12 +101,22 @@
         }
         [data-theme="dark"] .apod-credit a { color: #4dabf7; }
         .apod-credit a:hover { text-decoration: underline; }
+        #searchInput {
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background-color: var(--panel);
+            color: var(--text);
+            margin-bottom: 10px;
+            width: 100%;
+            max-width: 300px;
+        }
     </style>
 </head>
 <body>
     <img src="https://apod.nasa.gov/apod/image/2605/messier_portrait_300px_160h.jpg" class="apod-banner" alt="Astronomy Picture of the Day">
     <p class="apod-credit">Image: <a href="https://apod.nasa.gov/apod/ap260514.html" target="_blank">NASA APOD</a></p>
-    <h1>Messier Object Viewer <span class="version">v0.1.8.1</span></h1>
+    <h1>Messier Object Viewer <span class="version">v0.1.9.0</span></h1>
     <button onclick="toggleTheme()" id="themeToggle">🌙</button>
     <div class="container">
         <div class="left-panel">
@@ -116,6 +126,9 @@
             <div id="constellationList" class="constellation-list"></div>
         </div>
         <div class="right-panel">
+            <div>
+               <input type="text" id="searchInput" placeholder="Search all fields..." oninput="filterObjects()">
+            </div>
             <div>
                 Sort by:
                 <select id="sortBy" onchange="filterObjects()">
@@ -198,51 +211,64 @@
         }
 
         function filterObjects() {
-            document.querySelectorAll('#constellationList input[type="checkbox"]').forEach(cb => {
-                constellationVars[cb.nextElementSibling.textContent] = cb.checked;
-            });
-            const selectedConstellations = Object.entries(constellationVars)
-                .filter(([_, checked]) => checked)
-                .map(([c, _]) => c);
-            let filtered = Object.entries(messierData)
-                .filter(([_, obj]) => selectedConstellations.length === 0 || selectedConstellations.includes(obj.constellation));
-            const sortBy = document.getElementById('sortBy').value;
-            const sortOrder = document.getElementById('sortOrder').value;
-            filtered.sort((a, b) => {
-                const aObj = a[1], bObj = b[1];
-                let comparison = 0;
-            switch(sortBy) {
-                case 'number': comparison = parseInt(a[0].substring(1)) - parseInt(b[0].substring(1)); break;
-                case 'name': comparison = aObj.name.localeCompare(bObj.name); break;
-                case 'constellation': comparison = aObj.constellation.localeCompare(bObj.constellation); break;
-                case 'type': comparison = aObj.type.localeCompare(bObj.type); break;
-                case 'magnitude': comparison = (aObj.magnitude || 99) - (bObj.magnitude || 99); break;
-                case 'difficulty':
-                    const diffOrder = { 'Very Easy': 1, 'Easy': 2, 'Moderate': 3, 'Hard': 4, 'Very Hard': 5};
-                    comparison = (diffOrder[aObj.viewingDifficulty] || 5) - (diffOrder[bObj.viewingDifficulty] || 5);
-                    break;
-            }
-                return sortOrder === 'asc' ? comparison : -comparison;
-            });
-            const tbody = document.getElementById('resultsBody');
-            tbody.innerHTML = '';
-            filtered.forEach(([key, obj]) => {
-                const row = tbody.insertRow();
-                row.innerHTML = `
-                    <td>${key}</td>
-                    <td>${obj.name}</td>
-                    <td>${obj.constellation}</td>
-                    <td>${obj.type}</td>
-                    <td>${obj.magnitude || ''}</td>
-                    <td>${obj.viewingDifficulty || ''}</td>
-                    <td>${obj.image ? `<a href="${obj.image}" target="_blank">View Image</a>` : ''}</td>
-                `;
-            });
-            document.getElementById('status').textContent = `Showing ${filtered.length} objects`;
+    const searchText = document.getElementById('searchInput').value.toLowerCase();
+
+    document.querySelectorAll('#constellationList input[type="checkbox"]').forEach(cb => {
+        constellationVars[cb.nextElementSibling.textContent] = cb.checked;
+    });
+    const selectedConstellations = Object.entries(constellationVars)
+        .filter(([_, checked]) => checked)
+        .map(([c, _]) => c);
+
+    let filtered = Object.entries(messierData)
+        .filter(([_, obj]) => selectedConstellations.length === 0 || selectedConstellations.includes(obj.constellation))
+        .filter(([key, obj]) => {
+            if (!searchText) return true;
+            return key.toLowerCase().includes(searchText) ||
+                   obj.name.toLowerCase().includes(searchText) ||
+                   obj.constellation.toLowerCase().includes(searchText) ||
+                   obj.type.toLowerCase().includes(searchText) ||
+                   (obj.magnitude && obj.magnitude.toString().includes(searchText)) ||
+                   (obj.viewingDifficulty && obj.viewingDifficulty.toLowerCase().includes(searchText));
+        });
+
+    const sortBy = document.getElementById('sortBy').value;
+    const sortOrder = document.getElementById('sortOrder').value;
+    filtered.sort((a, b) => {
+        const aObj = a[1], bObj = b[1];
+        let comparison = 0;
+        switch(sortBy) {
+            case 'number': comparison = parseInt(a[0].substring(1)) - parseInt(b[0].substring(1)); break;
+            case 'name': comparison = aObj.name.localeCompare(bObj.name); break;
+            case 'constellation': comparison = aObj.constellation.localeCompare(bObj.constellation); break;
+            case 'type': comparison = aObj.type.localeCompare(bObj.type); break;
+            case 'magnitude': comparison = (aObj.magnitude || 99) - (bObj.magnitude || 99); break;
+            case 'difficulty':
+                const diffOrder = { 'Very Easy': 1, 'Easy': 2, 'Moderate': 3, 'Hard': 4, 'Very Hard': 5};
+                comparison = (diffOrder[aObj.viewingDifficulty] || 5) - (diffOrder[bObj.viewingDifficulty] || 5);
+                break;
         }
+        return sortOrder === 'asc' ? comparison : -comparison;
+    });
+    const tbody = document.getElementById('resultsBody');
+    tbody.innerHTML = '';
+    filtered.forEach(([key, obj]) => {
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td>${key}</td>
+            <td>${obj.name}</td>
+            <td>${obj.constellation}</td>
+            <td>${obj.type}</td>
+            <td>${obj.magnitude || ''}</td>
+            <td>${obj.viewingDifficulty || ''}</td>
+            <td>${obj.image ? `<a href="${obj.image}" target="_blank">View Image</a>` : ''}</td>
+        `;
+    });
+    document.getElementById('status').textContent = `Showing ${filtered.length} objects`;
+}
 
         function sortTable(columnIndex) {
-            const sortByOptions = ['number', 'name', 'type', 'magnitude', 'difficulty'];
+            const sortByOptions = ['number', 'name','constellation', 'type', 'magnitude', 'difficulty'];
             const sortBy = document.getElementById('sortBy');
             sortBy.value = sortByOptions[columnIndex] || 'number';
             const order = document.getElementById('sortOrder');
