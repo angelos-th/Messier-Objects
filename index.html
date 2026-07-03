@@ -106,7 +106,7 @@
 <body>
     <img src="https://apod.nasa.gov/apod/image/2605/messier_portrait_300px_160h.jpg" class="apod-banner" alt="Astronomy Picture of the Day">
     <p class="apod-credit">Image: <a href="https://apod.nasa.gov/apod/ap260514.html" target="_blank">NASA APOD</a></p>
-    <h1>Messier Object Viewer <span class="version">v0.1.7.2</span></h1>
+    <h1>Messier Object Viewer <span class="version">v0.1.8.0</span></h1>
     <button onclick="toggleTheme()" id="themeToggle">🌙</button>
     <div class="container">
         <div class="left-panel">
@@ -121,6 +121,7 @@
                 <select id="sortBy" onchange="filterObjects()">
                     <option value="number">Messier Number</option>
                     <option value="name">Name</option>
+                    <option value="constellation">Constellation</option>
                     <option value="type">Type</option>
                     <option value="magnitude">Magnitude</option>
                     <option value="difficulty">Difficulty</option>
@@ -136,9 +137,10 @@
                     <tr>
                         <th onclick="sortTable(0)">Messier #</th>
                         <th onclick="sortTable(1)">Name</th>
-                        <th onclick="sortTable(2)">Type</th>
-                        <th onclick="sortTable(3)">Magnitude</th>
-                        <th onclick="sortTable(4)">Difficulty</th>
+                        <th onclick="sortTable(2)">Constellation</th>
+                        <th onclick="sortTable(3)">Type</th>
+                        <th onclick="sortTable(4)">Magnitude</th>
+                        <th onclick="sortTable(5)">Difficulty</th>
                         <th>Image</th>
                     </tr>
                 </thead>
@@ -212,6 +214,7 @@
             switch(sortBy) {
                 case 'number': comparison = parseInt(a[0].substring(1)) - parseInt(b[0].substring(1)); break;
                 case 'name': comparison = aObj.name.localeCompare(bObj.name); break;
+                case 'constellation': comparison = aObj.constellation.localeCompare(bObj.constellation); break;
                 case 'type': comparison = aObj.type.localeCompare(bObj.type); break;
                 case 'magnitude': comparison = (aObj.magnitude || 99) - (bObj.magnitude || 99); break;
                 case 'difficulty':
@@ -228,6 +231,7 @@
                 row.innerHTML = `
                     <td>${key}</td>
                     <td>${obj.name}</td>
+                    <td>${obj.constellation}</td>
                     <td>${obj.type}</td>
                     <td>${obj.magnitude || ''}</td>
                     <td>${obj.viewingDifficulty || ''}</td>
