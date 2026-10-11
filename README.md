@@ -13,7 +13,13 @@ A collection of tools to explore the Messier catalog. Includes a **web app** (HT
 ## License
 MIT
 
-Images from: 
+
+## Images from: 
 Osric Dienda (https://osricdienda.com/)
 
 Astronomy Picture of the Day image credit: Sylvain Villet (https://science.nasa.gov/image-article/apod-2026-may-14-the-messier-catalog-at-uniform-scale/)
+
+##Data from: 
+QAEZZ (https://github.com/QAEZZ/messier-api-stable) 
+
+russiandev (https://replit.com/@russiandev/messier-api)
